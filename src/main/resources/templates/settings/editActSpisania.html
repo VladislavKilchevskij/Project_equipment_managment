@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+    <title>Настройки: Акт списания</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+	<div th:replace="~{fragments/global :: navbar}"></div>
+	<h2 class="col my-3 ms-4">Изменение бланка акта списания</h2>
+	<form class="ms-4" th:action="@{/settings/editActSpisania/save}" th:object="${form}" th:method="post">
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="chiefPosition">Должность руководителя, утверждающего документ:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="chiefPosition" type="text" th:field="*{chiefPosition}" th:value="*{chiefPosition}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="chiefName">Инициалы, фамилия руководителя, утверждающего документ:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="chiefName" type="text" th:field="*{chiefName}" th:value="*{chiefName}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="organisationName">Название организации:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="organisationName" type="text" th:field="*{organisationName}" th:value="*{organisationName}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="unp">УНП:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="unp" type="number" th:field="*{unp}" th:value="*{unp}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="departmentName">Название отдела:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="departmentName" type="text" th:field="*{departmentName}" th:value="*{departmentName}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="comissionMemberPosition1">Должность члена комиссии №1:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="comissionMemberPosition1" type="text" th:field="*{comissionMemberPosition1}" th:value="*{comissionMemberPosition1}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="comissionMemberName1">Инициалы, фамилия члена комиссии №1:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="comissionMemberName1" type="text" th:field="*{comissionMemberName1}" th:value="*{comissionMemberName1}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="comissionMemberPosition2">Должность члена комиссии №2:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="comissionMemberPosition2" type="text" th:field="*{comissionMemberPosition2}" th:value="*{comissionMemberPosition2}" required/>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-4 g-0 col-form-label h3" for="comissionMemberName2">Инициалы, фамилия члена комиссии №2:</label>
+			<div class="col-6 my-auto">
+				<input class="form-control" id="comissionMemberName2" type="text" th:field="*{comissionMemberName2}" th:value="*{comissionMemberName2}" required/>
+			</div>
+		</div>
+		<button class="btn btn-primary" type="submit">Сохранить изменения</button>
+	</form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

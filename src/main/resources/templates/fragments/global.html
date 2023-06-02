@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+	<nav th:fragment="navbar" class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+	  <div class="container-fluid">
+	    <span class="navbar-brand mb-0 h1">АСУ "Оборудование"</span>
+	    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
+	    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	      <ul class="navbar-nav flex-fill mb-0">
+	        <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="/index">Главная</a>
+	        </li>
+	        <li class="nav-item dropdown">
+	          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownFirst" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+	            Создать документ
+	          </a>
+	          <ul class="dropdown-menu" aria-labelledby="navbarDropdownFirst">
+	            <li><a class="dropdown-item" href="/acceptance/add_header">Акт приёма</a></li>
+	            <li><a class="dropdown-item" href="/request/add_header" >Заявка на ремонт</a></li>
+	          </ul>
+	        </li>
+		      <li class="nav-item dropdown">
+	          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+	            Справочники
+	          </a>
+	          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+	            <li><a class="dropdown-item" href="/employees">Сотрудники</a></li>
+	            <li><a class="dropdown-item" href="/departments">Отделы</a></li>
+	            <li><a class="dropdown-item" href="/equipment">Оборудование</a></li>
+	            <li><a class="dropdown-item" href="/equipment/archive">Оборудование (Списанное)</a></li>
+                <li><hr class="dropdown-divider"></li>
+	            <li><a class="dropdown-item" href="/acceptances">Акты приёма</a></li>
+	            <li><a class="dropdown-item" href="/maintenances">Акты ремонта</a></li>
+	            <li><a class="dropdown-item" href="/requests">Заявки</a></li>
+	          </ul>
+	        </li>
+            <li class="nav-item">
+	          <a class="nav-link" href="/about">О системе</a>
+	        </li>
+			<li class="nav-item ms-auto" sec:authorize="(not isAuthenticated())">
+				<form class="m-0" th:action="@{/login}" method="get">
+	                <input class="btn btn-danger" type="submit" value="Войти"/>
+	            </form>
+		    </li>
+		    <li class="nav-item ms-auto" sec:authorize="isAuthenticated()">
+				<form class="m-0" th:action="@{/logout}" method="post">
+	                <input class="btn btn-danger" type="submit" value="Выйти"/>
+	            </form>
+		    </li>
+            <li class="nav-item ms-2" sec:authorize="hasAuthority('ROLE_ADMIN')">
+		        <a class="btn btn-danger" type="button" data-bs-toggle="offcanvas" href="#offcanvasRight" aria-controls="offcanvasRight">
+					<img style="height: 19px" src="/img/notifications_white_24dp.svg" alt="notification">
+			        <span class="badge bg-secondary"
+			              th:text="${counter > 99} ? '99+' : ${counter}"></span>
+				</a>
+            </li>
+		      <li class="nav-item dropdown ms-2" sec:authorize="hasAuthority('ROLE_ADMIN')">
+	          <a class="btn btn-secondary" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+		          <img style="height: 23.99px" src="/img/settings.svg" alt="settings">
+	          </a>
+	          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+	            <li><a class="dropdown-item" href="/settings/editActPriema">Редактировать бланк акта приёма</a></li>
+	            <li><a class="dropdown-item" href="/settings/editActRemonta">Редактировать бланк акта ремонта</a></li>
+	            <li><a class="dropdown-item" href="/settings/editActSpisania">Редактировать бланк акта списания</a></li>
+	          </ul>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
+		<div class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel" sec:authorize="hasAuthority('ROLE_ADMIN')">
+		  <div class="offcanvas-header text-white-50 pb-0">
+		    <h5 id="offcanvasRightLabel">Уведомления</h5>
+		    <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		  </div>
+		  <div class="offcanvas-body text-white-50">
+		    <div th:class="${#strings.startsWith(item.message, 'Дней')} ? 'alert alert-dismissible alert-danger fade show mb-2' : 'alert alert-dismissible alert-warning fade show mb-2'" role="alert"
+		         th:each="item, itemStat : ${notifications}" th:if="(__${itemStat.index}__) < 7">
+			    <h6 class="alert-heading" th:text="|Инв.: ${item.id} ${item.category} ${item.equipmentName}|"></h6>
+		        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			    <hr class="my-0">
+			    <span th:text="${#strings.startsWith(item.message, 'Дней')}
+			  ? ${item.message}
+			  : (${item.message} + ' (' + ${#dates.format(item.nextInspectionDate, 'dd-MM-yyyy')} + ') ')"></span>
+			</div>
+			 <div class="alert mb-2" role="alert"
+			      th:if="${counter} > 7">
+			    <h6 class="alert-heading text-center" th:text="|ещё ${hiddenAmount} уведомлений...|"></h6>
+			</div>
+		  </div>
+		</div>
+	</nav>
+</body>
+</html>

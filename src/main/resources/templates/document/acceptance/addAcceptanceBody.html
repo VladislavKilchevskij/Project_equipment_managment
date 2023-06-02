@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Акт приёма</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div th:replace="~{fragments/global :: navbar}"></div>
+	<form class="ms-4" th:action="@{/acceptance/save}" th:object="${form}" th:method="post" onsubmit="setSaved('submit')">
+        <input hidden type="text" th:value="${form.provider}" th:field="*{provider}"/>
+        <input hidden type="number" th:value="${form.employee.id}" th:field="*{employee.id}"/>
+        <input hidden type="date" th:value="${form.acceptanceDate}" th:field="*{acceptanceDate}"/>
+		<input hidden type="number" th:value="${form.equipmentRowAmount}" th:field="*{equipmentRowAmount}"/>
+		<h2 class="col-2 my-3">Акт приёма</h2>
+		<h3 class="col-2 my-2">Оборудование</h3>
+		<div class="row mb-1 mx-0">
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Категория:</span>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Название, модель:</span>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Стоимость:</span>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Количество, шт.:</span>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Частота обслуживания:</span>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Срок эксплуатации:</span>
+			</div>
+		</div>
+		<div class="row mb-2 mx-0" th:each="item, itemStat : *{equipment}">
+			<div class="col-2 g-0 pe-2">
+				<select class="form-select" th:field="*{equipment[__${itemStat.index}__].category}" required>
+			        <option value="#" selected>Тип оборудования...</option>
+			        <option value="Компьютер">Компьютер</option>
+			        <option value="Принтер">Принтер</option>
+			        <option value="Комплектующие">Комплектующие</option>
+			        <option value="Расходные материалы">Расходные материалы</option>
+				</select>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<input class="form-control" th:field="*{equipment[__${itemStat.index}__].equipmentName}" placeholder="Прим.: Asus M100" required/>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<input class="form-control" th:field="*{equipment[__${itemStat.index}__].coast}" placeholder="Прим.: 1000.20" required/>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<input class="form-control" type="number" min="1" value="1" th:field="*{equipment[__${itemStat.index}__].amount}" required/>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<input class="form-control" type="number" min="1" th:field="*{equipment[__${itemStat.index}__].inspectionTerm}" placeholder="Период, мес." required/>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<input class="form-control" type="number" min="1" th:field="*{equipment[__${itemStat.index}__].usageTerm}" placeholder="Период, лет" required/>
+			</div>
+		</div>
+		<button class ="btn btn-primary mb-2" id="submit" type="submit">Сохранить</button>
+	</form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

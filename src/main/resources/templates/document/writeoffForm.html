@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Акт списания</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div th:replace="~{fragments/global :: navbar}"></div>
+	<form class="ms-4" th:action="@{/writeoff/save}" th:object="${form}" th:method="post" onsubmit="setSaved('submit')">
+		<h2 class="col-2 my-3">Акт списания</h2>
+		<div class="row mb-1 mx-0">
+			<label class="col-1 g-0 col-form-label h3" for="employee">Списал: </label>
+			<div class="col-3 my-auto">
+				<select class="form-select" id="employee" th:field="*{employee.id}" required>
+					<option th:value="*{employee.id}"
+					        th:text="|*{employee.surname} *{employee.firstName} *{employee.patronymic}|"
+					        selected>
+					</option>
+				</select>
+			</div>
+		</div>
+		<div class="row mb-1 mx-0">
+			<label class="col-1 g-0 col-form-label h3" for="date">Дата списания: </label>
+			<div class="col-2 my-auto">
+				<input class="form-control" id="date" type="date" th:field="*{writeoffDate}" required/>
+			</div>
+		</div>
+		<h3 class="col-2 my-2">Оборудование</h3>
+		<div class="row mb-1 mx-0">
+			<div class="col-1 g-0 pe-2">
+				<span class="col-form-label h3">Инв. номер:</span>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<span class="col-form-label h3">Категория:</span>
+			</div>
+			<div class="col-3 g-0 pe-2">
+				<span class="col-form-label h3">Название, модель:</span>
+			</div>
+			<div class="col-1 g-0 pe-2">
+				<span class="col-form-label h3">Стоимость:</span>
+			</div>
+			<div class="col-1 g-0 pe-2">
+				<span class="col-form-label h3">Срок экспл.:</span>
+			</div>
+			<div class="col g-0 pe-2">
+				<span class="col-form-label h3">Причина списания: </span>
+			</div>
+		</div>
+		<div class="row mb-2 mx-0" th:each="item, itemStat : *{equipment}">
+			<div class="col-1 g-0 pe-2">
+				<input class="form-control"
+				       th:field="*{equipment[__${itemStat.index}__].id}"
+				       th:value="*{equipment[__${itemStat.index}__].id}"
+				       required/>
+			</div>
+			<div class="col-2 g-0 pe-2">
+				<input class="form-control"
+				       th:field="*{equipment[__${itemStat.index}__].category}"
+				       th:value="*{equipment[__${itemStat.index}__].category}"
+				       required>
+			</div>
+			<div class="col-3 g-0 pe-2">
+				<input class="form-control"
+				       th:field="*{equipment[__${itemStat.index}__].equipmentName}"
+				       th:value="*{equipment[__${itemStat.index}__].equipmentName}"
+				       required/>
+			</div>
+			<div class="col-1 g-0 pe-2">
+				<input class="form-control"
+				       th:field="*{equipment[__${itemStat.index}__].coast}"
+				       th:value="*{equipment[__${itemStat.index}__].coast}"
+				       required/>
+			</div>
+			<div class="col-1 g-0 pe-2">
+				<input class="form-control"
+				       type="date"
+				       th:field="*{equipment[__${itemStat.index}__].usageEndDate}"
+				       th:value="*{equipment[__${itemStat.index}__].usageEndDate}"
+				       required/>
+			</div>
+			<div class="col g-0 pe-2">
+				<input class="form-control"
+				       type="text"
+				       th:field="*{equipment[__${itemStat.index}__].writeoffReason}"
+				       required/>
+			</div>
+		</div>
+		<button class="btn btn-primary mb-2" id="submit" type="submit">Сохранить</button>
+	</form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

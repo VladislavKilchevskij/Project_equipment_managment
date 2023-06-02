@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Оборудование</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+	<div th:replace="~{fragments/global :: navbar}"></div>
+	<h2 class="ms-3">Список оборудования</h2>
+	<form action="" method="post" id="form">
+		<input
+				type="hidden"
+				th:name="${_csrf.parameterName}"
+				th:value="${_csrf.token}" />
+	</form>
+	<div class="col-4 ms-3 my-3">
+		<div class="input-group">
+			<button class="btn btn-primary" type="button" onclick="aggregateAndSubmit('/equipment/setEmployee', false)">Вернуть на склад</button>
+			<select class="form-select" id="employeeId" required>
+						<th:block th:each="employee : ${employees}">
+					        <option th:value="${employee.id}"
+					                th:text="|${employee.surname} ${employee.firstName} ${employee.patronymic}|">
+					        </option>
+					    </th:block>
+			</select>
+			<button class="btn btn-success" type="button" onclick="aggregateAndSubmit('/equipment/setEmployee', true)">Выдать</button>
+			<button class="btn btn-danger" type="button" onclick="aggregateAndSubmit('/writeoff/initWriteoff', true)">Списать</button>
+		</div>
+		<a class="btn btn-primary mt-3" th:href="@{/equipment}">Сбросить поиск</a>
+	</div>
+	<div class="col-7 alert alert-danger alert-dismissible fade show ms-3" role="alert" th:if="${errLog != null}">
+		<h4>Возникли проблемы с закреплением оборудования!</h4>
+		<span th:text="${errLog}"></span><br>
+		<span>Возможные причины:</span><br>
+		<span>  - оборудование уже закреплено за сотрудником;</span><br>
+		<span>  - статус оборудования не соответствует "Исправно".</span>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	<table class="table table-striped bg-body border-dark align-middle">
+		<thead>
+			<tr>
+				<th scope="col" class="text-end">
+					<input class="form-check-input"
+					       id="mainCheck"
+					       type="checkbox"
+					       onclick="selectAllCheckboxes('checkRow')">
+				</th>
+				<th scope="col" class="col-1 flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=id&sortDir=' + ${reverseSortDir}}">№</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}" />
+						<input hidden name="columnName" value="id"/>
+						<input class="form-control" type="text" name="request"/>
+						<input hidden type="submit"/>
+					</form>
+				</th>
+				<th scope="col" class="flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=category&sortDir=' + ${reverseSortDir}}">Категория</a>
+					<form action="/equipment/search" method="post">
+						<input
+								hidden
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}" />
+						<input hidden name="columnName" value="category"/>
+						<div class="input-group">
+						  <select class="form-select" name="request" required>
+							<option selected>Выберите категорию</option>
+							<option value="Компьютер">Компьютер</option>
+							<option value="Принтер">Принтер</option>
+							<option value="Комплектующие">Комплектующие</option>
+							<option value="Расходные материалы">Расходные материалы</option>
+						</select>
+							<button class="btn alert-dark" type="submit">
+								<img style="height: 20px" src="/img/search.svg" alt="search">
+							</button>
+						</div>
+					</form>
+				</th>
+				<th scope="col" class="flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=equipmentName&sortDir=' + ${reverseSortDir}}">Наименование</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}" />
+						<input hidden name="columnName" value="equipmentName"/>
+						<input class="form-control" type="text" name="request"/>
+						<input hidden type="submit"/>
+					</form>
+				</th>
+				<th scope="col" class="col-1 flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=coast&sortDir=' + ${reverseSortDir}}">Стоимость</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}" />
+						<input hidden name="columnName" value="coast"/>
+						<input class="form-control" type="text" name="request" placeholder="100.10"/>
+						<input hidden type="submit"/>
+					</form>
+				</th>
+				<th scope="col" class="flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=employee&sortDir=' + ${reverseSortDir}}">Закреплено</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}"/>
+						<input hidden name="columnName" value="employee"/>
+						<input class="form-control" type="text" name="request" placeholder="Введите ФИО полностью"/>
+						<input hidden type="submit"/>
+					</form>
+				</th>
+				<th scope="col" class="flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=status&sortDir=' + ${reverseSortDir}}">Статус</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}" />
+						<input hidden name="columnName" value="status"/>
+						<div class="input-group">
+						  <select class="form-select" name="request" required>
+							<option selected>Выберите категорию</option>
+							<option value="Исправно">Исправно</option>
+							<option value="Заявка">Заявка</option>
+							<option value="На обслуживании">На обслуживании</option>
+						</select>
+							<button class="btn alert-dark" type="submit">
+								<img style="height: 20px" src="/img/search.svg" alt="search">
+							</button>
+						</div>
+					</form>
+				</th>
+				<th scope="col" class="col-1 flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=nextInspectionDate&sortDir=' + ${reverseSortDir}}">Проф. осмотр</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}" />
+						<input hidden name="columnName" value="nextInspectionDate"/>
+						<input class="form-control" type="text" name="request" placeholder="01-01-2023"/>
+						<input hidden type="submit"/>
+					</form>
+				</th>
+				<th scope="col" class="col-1 flex-column text-center">
+					<a th:href="@{'/equipment/page/' + ${currentPage != null ? currentPage : 1} +
+                        '?sortField=usageEndDate&sortDir=' + ${reverseSortDir}}">Срок экспл.</a>
+					<form action="/equipment/search" method="post">
+						<input
+								type="hidden"
+								th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}"/>
+						<input hidden name="columnName" value="usageEndDate"/>
+						<input class="form-control" type="text" name="request" placeholder="01-01-2023"/>
+						<input hidden type="submit"/>
+					</form>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${equipment}">
+				<td class="text-end">
+					<input class="form-check-input"
+					       name="checkRow" type="checkbox"
+					       th:value="${item.id}">
+				</td>
+				<th scope="row" class="text-center"><span th:text="${item.id}"></span></th>
+				<td><span th:text="${item.category}"></span></td>
+				<td><span th:text="${item.equipmentName}"></span></td>
+				<td><span th:text="${item.coast}"></span></td>
+				<td>
+					<span th:text="${item.employee != null} ? (${item.employee.surname} + ' ' + ${item.employee.firstName} + ' ' + ${item.employee.patronymic})
+					: 'На складе'"></span>
+				</td>
+				<td class="text-center"><span th:text="${item.status}"></span></td>
+				<td class="text-center"><span th:text="${item.nextInspectionDate != null} ? ${#dates.format(item.nextInspectionDate, 'dd-MM-yyyy')} : '---'"></span></td>
+				<td class="text-center"><span th:text="${#dates.format(item.usageEndDate, 'dd-MM-yyyy')}"></span></td>
+			</tr>
+		</tbody>
+	</table>
+	<div th:if="${totalPages > 1}">
+		<div class="row col-10">
+			<div class="col-2">
+				Всего строк таблицы: [[${totalItems}]]
+			</div>
+			<div class="col-3">
+				<span th:each="i : ${#numbers.sequence(1, totalPages)}">
+					<a th:if="${currentPage != i}" th:href="@{'/equipment/page/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+					<span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp; &nbsp;
+				</span>
+			</div>
+			<div class="col-1">
+				<a th:if="${currentPage < totalPages}" th:href="@{'/equipment/page/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Следующая</a>"
+				<span th:unless="${currentPage < totalPages}">Следующая</span>
+			</div>
+			<div class="col-1">
+				<a th:if="${currentPage < totalPages}" th:href="@{'/equipment/page/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Последняя</a>"
+				<span th:unless="${currentPage < totalPages}">Последняя</span>
+			</div>
+		</div>
+	</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
